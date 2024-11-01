@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+//npx prisma migrate dev --name <<nombre>>
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Libro{
+  id  Int @id @default(autoincrement())
+  titulo String
+  fecha_publicacion DateTime
+  numero_paginas Int
+  sinopsis String
+  objetivos String
+  resumen String
+  portada String
+
+  paisId Int
+  pais Pais @relation(fields: [paisId], references: [id])
+
+  autorId Int
+  autor Autor @relation(fields: [autorId], references: [id])
+
+  editorialId Int
+  editorial Editorial @relation(fields: [editorialId], references: [id])
+
+  categorias Categoria[]
+
+  resenias Resenia[]
+}
+
+model Autor{
+  id Int @id @default(autoincrement())
+  nombre String 
+  libros Libro[]
+}
+
+model Editorial{
+  id Int @id @default(autoincrement())
+  nombre String 
+  libros Libro[]
+}
+
+model Categoria{
+  id Int @id @default(autoincrement())
+  nombre String
+
+  libros Libro[]
+}
+
+model Pais{
+  id Int @id @default(autoincrement())
+  nombre String
+
+  libros Libro[]
+}
+
+model Usuario{
+  id Int @id @default(autoincrement())
+  nombre String
+  apellido String
+  nombreUsuario String
+  correo String @unique
+  contrasenia String
+
+  resenias Resenia[]
+}
+
+model Resenia{
+  id Int @id @default(autoincrement())
+  descripcion String? 
+  calificacion Int
+
+  usuarioId Int
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+  libroId Int
+  libro Libro @relation(fields: [libroId], references: [id])
+}
